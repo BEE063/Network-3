@@ -15,36 +15,57 @@ namespace PP_lab1
         {
 
         }
-        public bool CheckSum(BitArray array)
+        public bool CheckSum(BitArray[] array)
         {
-            BitArray bitArray = new BitArray(8);
+            BitArray bitArray = new BitArray(88);
+            int j = 0;
+
+            foreach (var e in array)
+            {
+                foreach (var r in e)
+                {
+                    if ((bool)r == true)
+                    {
+                        bitArray[j] = true;
+                    }
+                    else
+                    {
+                        bitArray[j] = false;
+                    }
+                    j++;
+                }
+            }
+
+            BitArray bitMessage = new BitArray(8);
             for (int i = 0; i < 8; i++)
             {
-                bitArray[i] = array[i];
+                bitMessage[i] = bitArray[i];
             }
-            int[] messageIntArray = new int[array.Length - 8];
-            for (int i = bitArray.Length; i < messageIntArray.Length; i++)
+
+
+            int[] messageIntArray = new int[80];
+            for (int i = 8; i < 88; i++)
             {
-                if (array[i] == true)
+                if (bitArray[i] == true)
                 {
-                    messageIntArray[i - bitArray.Length] = 1;
+                    messageIntArray[i - bitMessage.Length] = 1;
                 }
                 else
                 {
-                    messageIntArray[i - bitArray.Length] = 0;
+                    messageIntArray[i - 8] = 0;
                 }
             }
 
 
 
-            var checkStr = string.Join(" ", Array.ConvertAll(VerticalSum(ToTwoDimensionalArray(messageIntArray, array.Length / 8, 8)), x => x.ToString()));
+            var checkStr = string.Join(" ", Array.ConvertAll(VerticalSum(ToTwoDimensionalArray(messageIntArray, messageIntArray.Length / 8, 8)), x => x.ToString()));
 
 
 
-            string[] checkArray = new string[bitArray.Length];
+            string[] checkArray = new string[bitMessage.Length];
             for (int i = 0; i < checkArray.Length; i++)
             {
-                if (bitArray[i] == true)
+                if (bitMessage[i] == true)
                 {
                     checkArray[i] = "1";
                 }
@@ -55,7 +76,6 @@ namespace PP_lab1
             }
 
             string checkArrayString = string.Join(" ", checkArray);
-
 
             if (checkArrayString == checkStr)
             {
@@ -112,3 +132,4 @@ namespace PP_lab1
         }
     }
 }
+

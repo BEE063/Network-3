@@ -8,21 +8,33 @@ namespace ConsoleApp
     public static class ConsoleHelper
     {
         public static object LockObject = new Object();
-        public static void WriteTextMessageToConsole(string info, BitArray array)
+        public static void WriteTextMessageToConsole(string info, BitArray[] array)
         {
             lock (LockObject)
             {
-                BitArray bitArray = new BitArray(8);
-                for (int i = 0; i < 8; i++)
+                BitArray bitArray = new BitArray(88);
+                int j = 0;
+
+                foreach (var e in array)
                 {
-                    bitArray[i] = array[i];
+                    foreach (var r in e)
+                    {
+                        if ((bool)r == true)
+                        {
+                            bitArray[j] = true;
+                        }
+                        else
+                        {
+                            bitArray[j] = false;
+                        }
+                        j++;
+                    }
                 }
 
-
-                BitArray bitMessage = new BitArray(array.Length - 8);
-                for (int i = 0; i < array.Length - 8; i++)
+                BitArray bitMessage = new BitArray(80);
+                for (int i = 0; i < 80; i++)
                 {
-                    bitMessage[i] = array[8 + i];
+                    bitMessage[i] = bitArray[8 + i];
                 }
                 byte[] bytesMessageBack = BitArrayToByteArray(bitMessage);
                 string textMessageBack = System.Text.Encoding.Unicode.GetString(bytesMessageBack);
@@ -30,6 +42,30 @@ namespace ConsoleApp
 
             }
         }
+        public static void WriteToConsoleMatrixBitArray(string info, BitArray[] matrix)
+        {
+            lock (LockObject)
+            {
+                Console.Write(info + ": ");
+                foreach (var e in matrix)
+                {
+                    foreach (var r in e)
+                    {
+                        if ((bool)r == true)
+                        {
+                            Console.Write(1);
+                        }
+                        else
+                        {
+                            Console.Write(0);
+                        }
+                    }
+                }
+                Console.WriteLine();
+            }
+        }
+
+
 
         private static byte[] BitArrayToByteArray(BitArray array)
         {
@@ -46,22 +82,22 @@ namespace ConsoleApp
             }
 
         }
-        public static void WriteToConsoleReceipt(string info, BitArray array)
+        public static void WriteToConsoleReceipt(string info, BitArray[] array)
         {
             lock (LockObject)
             {
                 Console.Write(info + " : ");
-                if (array[0] == true)
+                if (array[0][0] == true)
                     Console.WriteLine("Квитанция от другого потока - true");
                 else
                     Console.WriteLine("Квитанция от другого потока - false");
             }
         }
-        public static void WriteToConsoleRequest(string info, string type, BitArray array)
+        public static void WriteToConsoleRequest(string info, string type, BitArray[] array)
         {
             lock (LockObject)
             {
-                if (array[0] == true && type == "connect")
+                if (array[0][0] == true && type == "connect")
                 {
                     Console.WriteLine(info + " : Другой поток запрашивает соеденение");
                 }
@@ -72,11 +108,11 @@ namespace ConsoleApp
 
             }
         }
-        public static void WriteToConsoleDisconnect(string info, string type, BitArray array)
+        public static void WriteToConsoleDisconnect(string info, string type, BitArray[] array)
         {
             lock (LockObject)
             {
-                if (array[0] == true && type == "disconnect")
+                if (array[0][0] == true && type == "disconnect")
                 {
                     Console.WriteLine(info + " : Другой поток запрашивает разрыв подключения");
                 }
