@@ -12,7 +12,7 @@ namespace ConsoleApp
         {
             lock (LockObject)
             {
-                BitArray bitArray = new BitArray(88);
+                BitArray bitArray = new BitArray(112);
                 int j = 0;
 
                 foreach (var e in array)
@@ -34,7 +34,7 @@ namespace ConsoleApp
                 BitArray bitMessage = new BitArray(80);
                 for (int i = 0; i < 80; i++)
                 {
-                    bitMessage[i] = bitArray[8 + i];
+                    bitMessage[i] = bitArray[17 + i];
                 }
                 byte[] bytesMessageBack = BitArrayToByteArray(bitMessage);
                 string textMessageBack = System.Text.Encoding.Unicode.GetString(bytesMessageBack);

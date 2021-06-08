@@ -10,7 +10,7 @@ using Buffer = PP_lab1.Buffer;
 
 namespace ConsoleApp
 {
-    public class FirstThread
+    public class ThirdThread
     {
         private Semaphore _sendSemaphore;
         private Semaphore _receiveSemaphore;
@@ -18,19 +18,19 @@ namespace ConsoleApp
         private BitArray[] _receivedMessage;
         private BitArray[] _sendMessage;
         private BitArray[] _sendReceipt;
-        private PostToSecondWT _post;
+        private PostToFourthWT _post;
 
-        public FirstThread(ref Semaphore sendSemaphore, ref Semaphore receiveSemaphore, ref Semaphore firstFileSemaphore)
+        public ThirdThread(ref Semaphore sendSemaphore, ref Semaphore receiveSemaphore, ref Semaphore firstFileSemaphore)
         {
             _sendSemaphore = sendSemaphore;
             _receiveSemaphore = receiveSemaphore;
             _firstFileSemaphore = firstFileSemaphore;
         }
-        public void FirstThreadMain(object obj)
+        public void ThirdThreadMain(object obj)
         {
             //1
-            _post = (PostToSecondWT)obj;
-            ConsoleHelper.WriteToConsole("1 поток", "Начинаю работу.Готовлю данные для передачи.");
+            _post = (PostToFourthWT)obj;
+            ConsoleHelper.WriteToConsole("3 поток", "Начинаю работу.Готовлю данные для передачи.");
             _sendReceipt = new BitArray[1];
             Frame.GenerateReceipt(_sendReceipt, true);
             _post(_sendReceipt);
@@ -38,10 +38,11 @@ namespace ConsoleApp
 
             //2
             _receiveSemaphore.WaitOne();
-            ConsoleHelper.WriteToConsoleRequest("1 поток", "", _receivedMessage);
+            ConsoleHelper.WriteToConsoleRequest("3 поток", "", _receivedMessage);
             FileStream fls;
             string data;
-            fls = new FileStream("C:/Users/Ekate/Downloads/ConsoleApp/1.txt", FileMode.Open);      
+            _firstFileSemaphore.WaitOne();
+            fls = new FileStream("C:/Users/Ekate/Downloads/ConsoleApp/1.txt", FileMode.Open);  
             StreamReader fstr_in = new StreamReader(fls);
             data = fstr_in.ReadLine();
             fstr_in.Close();
@@ -61,15 +62,15 @@ namespace ConsoleApp
             _receiveSemaphore.WaitOne();
 
             ResendData(_post, _receivedMessage);
-            ConsoleHelper.WriteToConsoleReceipt("1 поток", _receivedMessage);
-            ConsoleHelper.WriteToConsoleRequest("1 поток", "connect", _receivedMessage);
+            ConsoleHelper.WriteToConsoleReceipt("3 поток", _receivedMessage);
+            ConsoleHelper.WriteToConsoleRequest("3 поток", "connect", _receivedMessage);
             _sendSemaphore.Release();
             //5
             _receiveSemaphore.WaitOne();
 
             Buffer buffer = new Buffer();
-            ConsoleHelper.WriteToConsoleMatrixBitArray("1 поток", _receivedMessage);
-            ConsoleHelper.WriteTextMessageToConsole("1 поток переданный текст: ", _receivedMessage);
+            ConsoleHelper.WriteToConsoleMatrixBitArray("3 поток", _receivedMessage);
+            ConsoleHelper.WriteTextMessageToConsole("3 поток переданный текст: ", _receivedMessage);
             Frame.GenerateReceipt(_sendReceipt, buffer.CheckSum(_receivedMessage));
             bool check = buffer.CheckSum(_receivedMessage);
             _post(_sendReceipt);
@@ -79,8 +80,8 @@ namespace ConsoleApp
 
             if (check == false)
             {
-                ConsoleHelper.WriteToConsoleMatrixBitArray("1 поток", _receivedMessage);
-                ConsoleHelper.WriteTextMessageToConsole("1 поток переданный текст: ", _receivedMessage);
+                ConsoleHelper.WriteToConsoleMatrixBitArray("3 поток", _receivedMessage);
+                ConsoleHelper.WriteTextMessageToConsole("3 поток переданный текст: ", _receivedMessage);
                 Frame.GenerateReceipt(_sendReceipt, buffer.CheckSum(_receivedMessage));
                 _post(_sendReceipt);
             }
@@ -89,8 +90,8 @@ namespace ConsoleApp
             //7
             _receiveSemaphore.WaitOne();
 
-            ConsoleHelper.WriteToConsoleDisconnect("1 поток", "", _receivedMessage);
-            ConsoleHelper.WriteToConsole("2 поток", "Заканчиваю работу");
+            ConsoleHelper.WriteToConsoleDisconnect("3 поток", "", _receivedMessage);
+            ConsoleHelper.WriteToConsole("3 поток", "Заканчиваю работу");
 
             _sendSemaphore.Release();
 
@@ -100,14 +101,15 @@ namespace ConsoleApp
         {
             _receivedMessage = array;
         }
-        public void ResendData(PostToSecondWT _postTo, BitArray[] array)
+        public void ResendData(PostToFourthWT _postTo, BitArray[] array)
         {
             if (array[0][0] == false || array == null)
             {
-                ConsoleHelper.WriteToConsoleReceipt("1 поток", array);
-                ConsoleHelper.WriteToConsole("1 поток", "Отправляю повторно");
+                ConsoleHelper.WriteToConsoleReceipt("3 поток", array);
+                ConsoleHelper.WriteToConsole("3 поток", "Отправляю повторно");
                 FileStream fls;
                 string data;
+                _firstFileSemaphore.WaitOne();
                 fls = new FileStream("C:/Users/Ekate/Downloads/ConsoleApp/1.txt", FileMode.Open);
                 StreamReader fstr_in = new StreamReader(fls);
                 data = fstr_in.ReadLine();

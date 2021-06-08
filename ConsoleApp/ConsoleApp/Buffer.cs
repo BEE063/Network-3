@@ -17,7 +17,7 @@ namespace PP_lab1
         }
         public bool CheckSum(BitArray[] array)
         {
-            BitArray bitArray = new BitArray(88);
+            BitArray bitArray = new BitArray(112);
             int j = 0;
 
             foreach (var e in array)
@@ -36,23 +36,31 @@ namespace PP_lab1
                 }
             }
 
-            BitArray bitMessage = new BitArray(8);
+            BitArray flag = new BitArray(8);
             for (int i = 0; i < 8; i++)
             {
-                bitMessage[i] = bitArray[i];
+                flag[i] = bitArray[i];
+            }
+            BitArray type = new BitArray(1);
+            type[0] = bitArray[8];
+            BitArray checkSum = new BitArray(8);
+            for (int i = 9; i < 17; i++)
+            {
+                checkSum[i - 9] = bitArray[i];
             }
 
 
+
             int[] messageIntArray = new int[80];
-            for (int i = 8; i < 88; i++)
+            for (int i = checkSum.Length + 9; i < 97; i++)
             {
                 if (bitArray[i] == true)
                 {
-                    messageIntArray[i - bitMessage.Length] = 1;
+                    messageIntArray[i - checkSum.Length - 9] = 1;
                 }
                 else
                 {
-                    messageIntArray[i - 8] = 0;
+                    messageIntArray[i - checkSum.Length - 9] = 0;
                 }
             }
 
@@ -60,12 +68,49 @@ namespace PP_lab1
 
             var checkStr = string.Join(" ", Array.ConvertAll(VerticalSum(ToTwoDimensionalArray(messageIntArray, messageIntArray.Length / 8, 8)), x => x.ToString()));
 
+            string checkTypeString;
+            if (bitArray.Length > 1)
+            {
+                checkTypeString = "True";
+            }
+            else
+            {
+                checkTypeString = "False";
+            }
 
+            string typeString = type[0].ToString();
 
-            string[] checkArray = new string[bitMessage.Length];
+            string[] flagStringArray = new string[flag.Length];
+            for (int i = 0; i < flagStringArray.Length; i++)
+            {
+                if (flag[i] == true)
+                {
+                    flagStringArray[i] = "1";
+                }
+                else
+                {
+                    flagStringArray[i] = "0";
+                }
+            }
+            string flagString = string.Join(" ", flagStringArray);
+            string checkFlag = "0 1 1 1 1 1 1 0";
+            string[] secondFlagArray = new string[8];
+            for (int i = 0; i < 8; i++)
+            {
+                if (bitArray[i + 97] == true)
+                {
+                    secondFlagArray[i] = "1";
+                }
+                else
+                {
+                    secondFlagArray[i] = "0";
+                }
+            }
+            string secondFlagString = string.Join(" ", secondFlagArray);
+            string[] checkArray = new string[checkSum.Length];
             for (int i = 0; i < checkArray.Length; i++)
             {
-                if (bitMessage[i] == true)
+                if (checkSum[i] == true)
                 {
                     checkArray[i] = "1";
                 }
@@ -74,10 +119,9 @@ namespace PP_lab1
                     checkArray[i] = "0";
                 }
             }
-
             string checkArrayString = string.Join(" ", checkArray);
 
-            if (checkArrayString == checkStr)
+            if (checkArrayString.Equals(checkStr) && flagString.Equals(checkFlag) && checkTypeString.Equals(typeString) && secondFlagString.Equals(checkFlag))
             {
                 return true;
             }

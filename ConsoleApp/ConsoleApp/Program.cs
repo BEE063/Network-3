@@ -10,41 +10,48 @@ namespace ThreadsEdu
 {
     public delegate void PostToFirstWT(BitArray[] message);
     public delegate void PostToSecondWT(BitArray[] message);
-    public delegate void PostDataToFirstWT(BitArray[] message);
-    public delegate void PostDataToSecondWT(BitArray[] message);
+    public delegate void PostToThirdWT(BitArray[] message);
+    public delegate void PostToFourthWT(BitArray[] message);
+
     class Program
     {
         static void Main(string[] args)
         {
             ConsoleHelper.WriteToConsole("Главный поток", "");
-
             Semaphore firstReceiveSemaphore = new Semaphore(0, 1);
             Semaphore secondReceiveSemaphore = new Semaphore(0, 1);
+            Semaphore thirdReceiveSemaphore = new Semaphore(0, 1);
+            Semaphore fourthReceiveSemaphore = new Semaphore(0, 1);
+            Semaphore firstFileSemaphore = new Semaphore(0, 1);
+            Semaphore secondFileSemaphore = new Semaphore(0, 1);
 
-            FirstThread firstThread = new FirstThread(ref secondReceiveSemaphore, ref firstReceiveSemaphore);
-            SecondThread secondThread = new SecondThread(ref firstReceiveSemaphore, ref secondReceiveSemaphore);
+            FirstThread firstThread = new FirstThread(ref secondReceiveSemaphore, ref firstReceiveSemaphore, ref firstFileSemaphore);
+            SecondThread secondThread = new SecondThread(ref firstReceiveSemaphore, ref secondReceiveSemaphore, ref secondFileSemaphore);
+            ThirdThread thirdThread = new ThirdThread(ref fourthReceiveSemaphore, ref thirdReceiveSemaphore, ref firstFileSemaphore);
+            FourthThread fourthThread = new FourthThread(ref thirdReceiveSemaphore, ref fourthReceiveSemaphore, ref secondFileSemaphore);
 
             Thread threadFirst = new Thread(new ParameterizedThreadStart(firstThread.FirstThreadMain));
             Thread threadSecond = new Thread(new ParameterizedThreadStart(secondThread.SecondThreadMain));
-            Thread thirdThread = new Thread(new ParameterizedThreadStart(firstThread.SendData));
-            Thread fouthThread = new Thread(new ParameterizedThreadStart(secondThread.SendData));
+            Thread threadThird = new Thread(new ParameterizedThreadStart(thirdThread.ThirdThreadMain));
+            Thread threafFourth = new Thread(new ParameterizedThreadStart(fourthThread.FourthThreadMain));
 
             PostToFirstWT postToFirstWt = new PostToFirstWT(firstThread.ReceiveData);
             PostToSecondWT postToSecondWt = new PostToSecondWT(secondThread.ReceiveData);
-            PostDataToFirstWT postDataToFirstWT = new PostDataToFirstWT(firstThread.ReceiveData);
-            PostDataToSecondWT postDataToSecondWT = new PostDataToSecondWT(secondThread.ReceiveData);
+            PostToThirdWT postToThirdWt = new PostToThirdWT(thirdThread.ReceiveData);
+            PostToFourthWT postToFourthWt = new PostToFourthWT(fourthThread.ReceiveData);
 
-            thirdThread.Start(postDataToSecondWT);
-            fouthThread.Start(postDataToFirstWT);
+
             threadFirst.Start(postToSecondWt);
             threadSecond.Start(postToFirstWt);
-
+            threadThird.Start(postToFourthWt);
+            threafFourth.Start(postToThirdWt);
             Console.ReadLine();
 
         }
     }
 
 }
+
 
 
 

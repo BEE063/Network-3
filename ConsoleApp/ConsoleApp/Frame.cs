@@ -42,24 +42,35 @@ namespace PP_lab1
             }
 
 
-            BitArray total = new BitArray(bitArray.Length + messageArray.Length);
-
-            for (int i = 0; i < bitArray.Length; i++)
+            BitArray total = new BitArray(bitArray.Length + messageArray.Length + 17);
+            for (int i = 1; i < 7; i++)
             {
-                total[i] = bitArray[i];
+                total[i] = true;
             }
-            for (int i = bitArray.Length; i < messageArray.Length; i++)
+            total[0] = false;
+            total[7] = false;
+            total[8] = true;
+            for (int i = 9; i < bitArray.Length + 9; i++)
             {
-                total[i] = messageArray[i - bitArray.Length];
+                total[i] = bitArray[i - 9];
             }
+            for (int i = bitArray.Length + 9; i < messageArray.Length + 9; i++)
+            {
+                total[i] = messageArray[i - bitArray.Length - 9];
+            }
+            total[messageArray.Length + 16 + 1] = false;
+            for (int i = messageArray.Length + 16 + 2; i < messageArray.Length + 16 + 8; i++)
+            {
+                total[i] = true;
+            }
+            total[messageArray.Length + 16 + 8] = false;
 
-
-            double package = messageArray.Length / 56;
+            double package = total.Length / 56;
             BitArray[] bitArrayMatrix = new BitArray[(int)(Math.Ceiling(package))];
 
             if (total.Length > 56)
             {
-                Packages(total, 2);
+                Packages(total, (int)Math.Ceiling(package));
             }
 
             return Packages(total, (int)Math.Ceiling(package));
