@@ -8,15 +8,15 @@ namespace PP_lab1
 {
     public class Frame
     {
-        public static BitArray[] GenerateData(string message)
+        public static BitArray[] GenerateData(byte[] bytes)
         {
-            byte[] bytes = System.Text.Encoding.Unicode.GetBytes(message);
-            BitArray messageArray = new BitArray(bytes);
+            //byte[] bytes = System.Text.Encoding.Unicode.GetBytes(message);
+            BitArray fileArray = new BitArray(bytes);
 
-            int[] messageIntArray = new int[messageArray.Length];
+            int[] messageIntArray = new int[fileArray.Length];
             for (int i = 0; i < messageIntArray.Length; i++)
             {
-                if (messageArray[i] == true)
+                if (fileArray[i] == true)
                 {
                     messageIntArray[i] = 1;
                 }
@@ -25,7 +25,7 @@ namespace PP_lab1
                     messageIntArray[i] = 0;
                 }
             }
-
+            var messageInt = string.Join(" ", messageIntArray);
             var checkStr = string.Join(" ", Array.ConvertAll(VerticalSum(ToTwoDimensionalArray(messageIntArray, bytes.Length, 8)), x => x.ToString()));
 
             BitArray bitArray = new BitArray(8);
@@ -42,7 +42,7 @@ namespace PP_lab1
             }
 
 
-            BitArray total = new BitArray(bitArray.Length + messageArray.Length + 17);
+            BitArray total = new BitArray(bitArray.Length + fileArray.Length + 17);
             for (int i = 1; i < 7; i++)
             {
                 total[i] = true;
@@ -54,16 +54,16 @@ namespace PP_lab1
             {
                 total[i] = bitArray[i - 9];
             }
-            for (int i = bitArray.Length + 9; i < messageArray.Length + 9; i++)
+            for (int i = 17; i < fileArray.Length+17; i++)
             {
-                total[i] = messageArray[i - bitArray.Length - 9];
+                total[i] = fileArray[i - bitArray.Length - 9];
             }
-            total[messageArray.Length + 16 + 1] = false;
-            for (int i = messageArray.Length + 16 + 2; i < messageArray.Length + 16 + 8; i++)
+            total[fileArray.Length + 16 + 1] = false;
+            for (int i = fileArray.Length + 16 + 2; i < fileArray.Length + 16 + 8; i++)
             {
                 total[i] = true;
             }
-            total[messageArray.Length + 16 + 8] = false;
+            total[fileArray.Length + 16 + 8] = false;
 
             double package = total.Length / 56;
             BitArray[] bitArrayMatrix = new BitArray[(int)(Math.Ceiling(package))];
@@ -129,9 +129,9 @@ namespace PP_lab1
             return sumColumn;
         }
 
-        public static BitArray[] GenerateErrorData(string message)
+        public static BitArray[] GenerateErrorData(byte[] bytes)
         {
-            byte[] bytes = System.Text.Encoding.Unicode.GetBytes(message);
+            //byte[] bytes = System.Text.Encoding.Unicode.GetBytes(message);
             BitArray messageArray = new BitArray(bytes);
             int checkSum = 0;
             for (int i = 0; i < messageArray.Length; i += 2)
@@ -142,10 +142,10 @@ namespace PP_lab1
                 }
             }
 
-            string temp = checkSum.ToString() + message;
+            string temp = checkSum.ToString();
             byte[] bytesTemp = System.Text.Encoding.Unicode.GetBytes(temp);
             BitArray array = new BitArray(bytesTemp);
-            for (int i = 50; i < 64; i++)
+            for (int i = 20; i < 25; i++)
             {
                 if (array[i] == true)
                 {

@@ -22,13 +22,11 @@ namespace ThreadsEdu
             Semaphore secondReceiveSemaphore = new Semaphore(0, 1);
             Semaphore thirdReceiveSemaphore = new Semaphore(0, 1);
             Semaphore fourthReceiveSemaphore = new Semaphore(0, 1);
-            Semaphore firstFileSemaphore = new Semaphore(0, 1);
-            Semaphore secondFileSemaphore = new Semaphore(0, 1);
 
-            FirstThread firstThread = new FirstThread(ref secondReceiveSemaphore, ref firstReceiveSemaphore, ref firstFileSemaphore);
-            SecondThread secondThread = new SecondThread(ref firstReceiveSemaphore, ref secondReceiveSemaphore, ref secondFileSemaphore);
-            ThirdThread thirdThread = new ThirdThread(ref fourthReceiveSemaphore, ref thirdReceiveSemaphore, ref firstFileSemaphore);
-            FourthThread fourthThread = new FourthThread(ref thirdReceiveSemaphore, ref fourthReceiveSemaphore, ref secondFileSemaphore);
+            FirstThread firstThread = new FirstThread(ref secondReceiveSemaphore, ref firstReceiveSemaphore);
+            SecondThread secondThread = new SecondThread(ref firstReceiveSemaphore, ref secondReceiveSemaphore);
+            ThirdThread thirdThread = new ThirdThread(ref fourthReceiveSemaphore, ref thirdReceiveSemaphore);
+            FourthThread fourthThread = new FourthThread(ref thirdReceiveSemaphore, ref fourthReceiveSemaphore);
 
             Thread threadFirst = new Thread(new ParameterizedThreadStart(firstThread.FirstThreadMain));
             Thread threadSecond = new Thread(new ParameterizedThreadStart(secondThread.SecondThreadMain));

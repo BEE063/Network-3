@@ -51,8 +51,8 @@ namespace PP_lab1
 
 
 
-            int[] messageIntArray = new int[80];
-            for (int i = checkSum.Length + 9; i < 97; i++)
+            int[] messageIntArray = new int[40];
+            for (int i = 18; i < 57; i++)
             {
                 if (bitArray[i] == true)
                 {
@@ -64,7 +64,7 @@ namespace PP_lab1
                 }
             }
 
-
+            var messageInt = string.Join(" ", messageIntArray);
 
             var checkStr = string.Join(" ", Array.ConvertAll(VerticalSum(ToTwoDimensionalArray(messageIntArray, messageIntArray.Length / 8, 8)), x => x.ToString()));
 
@@ -97,7 +97,7 @@ namespace PP_lab1
             string[] secondFlagArray = new string[8];
             for (int i = 0; i < 8; i++)
             {
-                if (bitArray[i + 97] == true)
+                if (bitArray[i + 57] == true)
                 {
                     secondFlagArray[i] = "1";
                 }
@@ -120,6 +120,7 @@ namespace PP_lab1
                 }
             }
             string checkArrayString = string.Join(" ", checkArray);
+           
 
             if (checkArrayString.Equals(checkStr) && flagString.Equals(checkFlag) && checkTypeString.Equals(typeString) && secondFlagString.Equals(checkFlag))
             {

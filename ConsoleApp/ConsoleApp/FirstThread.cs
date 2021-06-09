@@ -1,8 +1,10 @@
-﻿using PP_lab1;
+﻿using Microsoft.VisualBasic.CompilerServices;
+using PP_lab1;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using ThreadsEdu;
@@ -14,17 +16,15 @@ namespace ConsoleApp
     {
         private Semaphore _sendSemaphore;
         private Semaphore _receiveSemaphore;
-        private Semaphore _firstFileSemaphore;
         private BitArray[] _receivedMessage;
         private BitArray[] _sendMessage;
         private BitArray[] _sendReceipt;
         private PostToSecondWT _post;
 
-        public FirstThread(ref Semaphore sendSemaphore, ref Semaphore receiveSemaphore, ref Semaphore firstFileSemaphore)
+        public FirstThread(ref Semaphore sendSemaphore, ref Semaphore receiveSemaphore)
         {
             _sendSemaphore = sendSemaphore;
             _receiveSemaphore = receiveSemaphore;
-            _firstFileSemaphore = firstFileSemaphore;
         }
         public void FirstThreadMain(object obj)
         {
@@ -39,14 +39,10 @@ namespace ConsoleApp
             //2
             _receiveSemaphore.WaitOne();
             ConsoleHelper.WriteToConsoleRequest("1 поток", "", _receivedMessage);
-            FileStream fls;
-            string data;
-            fls = new FileStream("C:/Users/Ekate/Downloads/ConsoleApp/1.txt", FileMode.Open);      
-            StreamReader fstr_in = new StreamReader(fls);
-            data = fstr_in.ReadLine();
-            fstr_in.Close();
-            _firstFileSemaphore.Release();
-            _post(Frame.GenerateData(data));
+            var fileBytes =
+                File.ReadAllBytes("C:/Users/Ekate/Downloads/ConsoleApp/1.txt");
+           
+            _post(Frame.GenerateData(fileBytes));
 
             _sendMessage = new BitArray[2];
 
@@ -62,35 +58,12 @@ namespace ConsoleApp
 
             ResendData(_post, _receivedMessage);
             ConsoleHelper.WriteToConsoleReceipt("1 поток", _receivedMessage);
-            ConsoleHelper.WriteToConsoleRequest("1 поток", "connect", _receivedMessage);
             _sendSemaphore.Release();
             //5
             _receiveSemaphore.WaitOne();
 
-            Buffer buffer = new Buffer();
-            ConsoleHelper.WriteToConsoleMatrixBitArray("1 поток", _receivedMessage);
-            ConsoleHelper.WriteTextMessageToConsole("1 поток переданный текст: ", _receivedMessage);
-            Frame.GenerateReceipt(_sendReceipt, buffer.CheckSum(_receivedMessage));
-            bool check = buffer.CheckSum(_receivedMessage);
-            _post(_sendReceipt);
-            _sendSemaphore.Release();
-            ////6
-            _receiveSemaphore.WaitOne();
-
-            if (check == false)
-            {
-                ConsoleHelper.WriteToConsoleMatrixBitArray("1 поток", _receivedMessage);
-                ConsoleHelper.WriteTextMessageToConsole("1 поток переданный текст: ", _receivedMessage);
-                Frame.GenerateReceipt(_sendReceipt, buffer.CheckSum(_receivedMessage));
-                _post(_sendReceipt);
-            }
-
-            _sendSemaphore.Release();
-            //7
-            _receiveSemaphore.WaitOne();
-
             ConsoleHelper.WriteToConsoleDisconnect("1 поток", "", _receivedMessage);
-            ConsoleHelper.WriteToConsole("2 поток", "Заканчиваю работу");
+            ConsoleHelper.WriteToConsole("1 поток", "Заканчиваю работу");
 
             _sendSemaphore.Release();
 
@@ -106,18 +79,14 @@ namespace ConsoleApp
             {
                 ConsoleHelper.WriteToConsoleReceipt("1 поток", array);
                 ConsoleHelper.WriteToConsole("1 поток", "Отправляю повторно");
-                FileStream fls;
-                string data;
-                fls = new FileStream("C:/Users/Ekate/Downloads/ConsoleApp/1.txt", FileMode.Open);
-                StreamReader fstr_in = new StreamReader(fls);
-                data = fstr_in.ReadLine();
-                fstr_in.Close();
-                _firstFileSemaphore.Release();
-                _postTo(Frame.GenerateData(data));
+                var fileBytes =
+                File.ReadAllBytes("C:/Users/Ekate/Downloads/ConsoleApp/1.txt");
+                _postTo(Frame.GenerateData(fileBytes));
 
             }
 
         }
+
 
     }
 }
