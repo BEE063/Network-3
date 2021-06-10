@@ -49,8 +49,6 @@ namespace PP_lab1
                 checkSum[i - 9] = bitArray[i];
             }
 
-
-
             int[] messageIntArray = new int[40];
             for (int i = 18; i < 57; i++)
             {
